@@ -335,7 +335,7 @@ In this step, you deploy the API that you created to a stage called prod.
 We have successfully created a serverless API using API Gateway, Lambda, and DynamoDB!
 
 ## Postman Collection
-![link to json file](./images/postman.png)![Link to json file](./images/LamdaApigatewayDynamoDb.postman_collection.json)
+![link to json file](./images/postman.png)[Link to json file](./images/LamdaApigatewayDynamoDb.postman_collection.json)
 
 
 ## Cleanup
@@ -358,5 +358,7 @@ To delete the API we created, in API gateway console, under APIs, select "Dynamo
 ![Delete API](./images/delete-api.jpg)
 
 # TODO:
-1. Add security: Add Authorization jwt to calls
-2. What else?
+1. Make Api gateway secure using (oauth, jwt, lamda authorizer, cognito)
+2. Enterprise grade serverless
+3. Use system to do hotel reservation to test a full system
+4. Above can be done with amplify?
