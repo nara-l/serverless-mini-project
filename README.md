@@ -105,6 +105,7 @@ To create an execution role
 **Example Python Code**
 ```python
 from __future__ import print_function
+from botocore.exceptions import ClientError
 
 import boto3
 import json
@@ -124,8 +125,17 @@ def lambda_handler(event, context):
     operation = event['operation']
 
     if 'tableName' in event:
-        dynamo = boto3.resource('dynamodb').Table(event['tableName'])
-
+        dynamodb = boto3.resource('dynamodb')
+        try:
+            # TODO: write code...
+            dynamo = dynamodb.Table(event['tableName'])
+            dynamo.load()
+        except ClientError as e:
+            if e.response['Error']['Code'] == "ResourceNotFoundException":
+                print("Table does not exist.")
+                return "Table does not exist."
+            else:
+                raise
     operations = {
         'create': lambda x: dynamo.put_item(**x),
         'read': lambda x: dynamo.get_item(**x),
@@ -140,6 +150,8 @@ def lambda_handler(event, context):
         return operations[operation](event.get('payload'))
     else:
         raise ValueError('Unrecognized operation "{}"'.format(operation))
+
+
 ```
 ![Lambda Code](./images/lambda-code-paste.jpg)
 
