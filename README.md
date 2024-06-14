@@ -294,7 +294,49 @@ In this step, you deploy the API that you created to a stage called prod.
 ```
 ![List Dynamo Items](./images/dynamo-item-list.jpg)
 
+5. To delete an item from the table, we can use the "delete" operation of Lambda using the same API. Pass the following JSON to the API, and it will delete the id specified from the Dynamo table
+
+```json
+{
+    "operation": "delete",
+    "tableName": "lambda-apigateway",
+    "payload": {
+        "Key": {
+            "id": "12345ABCD"
+        }
+    }
+}
+```
+![List Delete an Item](./images/delete.png)
+
+6. To update an item from the table, we can use the "update" operation of Lambda using the same API. Pass the following JSON to the API, and it will the id specified with numbers value from the Dynamo table. Note: this is patch operation, so we must create API gateway patch endpoint.
+
+```json
+{
+    "operation": "update",
+    "tableName": "lambda-apigateway",
+    "payload": {
+        "Key": {
+            "id": "12345ABCD"
+        },
+        "ExpressionAttributeNames": {
+            "#N": "number"
+        },
+        "ExpressionAttributeValues": {
+            ":n": 988
+        },
+        "UpdateExpression": "SET #N = :n",
+        "ReturnValues": "ALL_NEW"
+    }
+}
+```
+![List Dynamo Items](./images/patch.png)
+
 We have successfully created a serverless API using API Gateway, Lambda, and DynamoDB!
+
+## Postman Collection
+![link to json file](./images/postman.png)![Link to json file](./images/LamdaApigatewayDynamoDb.postman_collection.json)
+
 
 ## Cleanup
 
@@ -314,3 +356,7 @@ To delete the Lambda, from the Lambda console, select lambda "LambdaFunctionOver
 To delete the API we created, in API gateway console, under APIs, select "DynamoDBOperations" API, click "Actions", then "Delete"
 
 ![Delete API](./images/delete-api.jpg)
+
+# TODO:
+1. Add security: Add Authorization jwt to calls
+2. What else?
