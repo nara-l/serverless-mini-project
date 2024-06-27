@@ -8,20 +8,30 @@ const jwt = require('jsonwebtoken');
 const jwksClient = require('jwks-rsa');
 
 const client = jwksClient({
-    jwksUri: `https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`
+    jwksUri: `https://dev-tutojssyjl6gkfar.us.auth0.com/.well-known/jwks.json`
 });
+
 function getKey(header, callback) {
     client.getSigningKey(header.kid, function (err, key) {
-        const signingKey = key.publicKey || key.rsaPublicKey;
-        callback(null, signingKey);
+        if (err) {
+            console.error("Error getting signing key:", err);
+            callback(err);
+        } else {
+            const signingKey = key.publicKey || key.rsaPublicKey;
+            callback(null, signingKey);
+        }
     });
 }
 
 exports.handler = async function (event, context) {
-    // Check if the token is provided
+    console.log("Received event:", JSON.stringify(event, null, 2));
+
     if (!event.authorizationToken) {
-        return context.fail('Unauthorized');
+        console.error("No authorization token found in the request");
+        context.fail('Unauthorized');
+        return;
     }
+
     const generatePolicy = (principalId, effect, resource) => {
         const authResponse = {};
         authResponse.principalId = principalId;
@@ -39,18 +49,20 @@ exports.handler = async function (event, context) {
             authResponse.policyDocument = policyDocument;
         }
         return authResponse;
-    }
+    };
+
     const token = event.authorizationToken.replace('Bearer ', '');
-    try {
-        const decode = await jwt.verify(token, getKey, {
-            audience: process.env.AUTH0_AUDIENCE,
-            issuer: `https://${process.env.AUTH0_DOMAIN}/`,
-            algorithms: ['RS256']
-        });
-
-        return generatePolicy(decode.sub, 'Allow', event.methodArn);
-    } catch (error) {
-        return generatePolicy('user', 'Deny', event.methodArn);
-    }
-
-}
+    jwt.verify(token, getKey, {
+        audience: `https://dev-tutojssyjl6gkfar.us.auth0.com/api/v2/`,
+        issuer: `https://dev-tutojssyjl6gkfar.us.auth0.com/`,
+        algorithms: ['RS256']
+    }, (err, decoded) => {
+        if (err) {
+            console.error("Token verification failed:", err);
+            context.fail('Unauthorized');
+        } else {
+            console.log("Token verified successfully:", decoded);
+            context.succeed(generatePolicy(decoded.sub, 'Allow', event.methodArn));
+        }
+    });
+};
