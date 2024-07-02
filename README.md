@@ -3,7 +3,7 @@
 ## Lab Overview And High Level Design
 
 Let's start with the High Level Design.
-![High Level Design](./images/high-level-design.jpg)
+![High Level Design](./images/high-level-design.png)
 An Amazon API Gateway is a collection of resources and methods. For this tutorial, you create one resource (DynamoDBManager) and define one method (POST) on it. The method is backed by a Lambda function (LambdaFunctionOverHttps). That is, when you call the API through an HTTPS endpoint, Amazon API Gateway invokes the Lambda function.
 
 The POST method on the DynamoDBManager resource supports the following DynamoDB operations:
@@ -357,8 +357,12 @@ To delete the API we created, in API gateway console, under APIs, select "Dynamo
 
 ![Delete API](./images/delete-api.jpg)
 
+
+### ADR
+![ADR](./images/adr-auth0-integration.md)
+
 # TODO:
-1. Make Api gateway secure using (oauth, jwt, lamda authorizer, cognito)
-2. Enterprise grade serverless
-3. Use system to do hotel reservation to test a full system
+1. Make Api gateway secure using (oauth, jwt, lamda authorizer, cognito) - DONE
+2. Add ADR
+3. UI Integration: Use system to do hotel reservation to test a full system
 4. Above can be done with amplify?
