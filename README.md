@@ -29,7 +29,9 @@ The following is a sample request payload for a DynamoDB create item operation:
     }
 }
 ```
+
 The following is a sample request payload for a DynamoDB read item operation:
+
 ```json
 {
     "operation": "read",
@@ -44,7 +46,8 @@ The following is a sample request payload for a DynamoDB read item operation:
 
 ## Setup
 
-### Create Lambda IAM Role 
+### Create Lambda IAM Role
+
 Create the execution role that gives your function permission to access AWS resources.
 
 To create an execution role
@@ -52,50 +55,51 @@ To create an execution role
 1. Open the roles page in the IAM console.
 2. Choose Create role.
 3. Create a role with the following properties.
-    * Trusted entity – Lambda.
-    * Role name – **lambda-apigateway-role**.
-    * Permissions – Custom policy with permission to DynamoDB and CloudWatch Logs. This custom policy has the permissions that  the function needs to write data to DynamoDB and upload logs. 
-    ```json
-    {
-    "Version": "2012-10-17",
-    "Statement": [
-    {
-      "Sid": "Stmt1428341300017",
-      "Action": [
-        "dynamodb:DeleteItem",
-        "dynamodb:GetItem",
-        "dynamodb:PutItem",
-        "dynamodb:Query",
-        "dynamodb:Scan",
-        "dynamodb:UpdateItem",
-        "dynamodb:DescribeTable"
-      ],
-      "Effect": "Allow",
-      "Resource": "*"
-    },
-    {
-      "Sid": "",
-      "Resource": "*",
-      "Action": [
-        "logs:CreateLogGroup",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
-      ],
-      "Effect": "Allow"
-    }
-    ]
-    }
-    ```
+   * Trusted entity – Lambda.
+   * Role name – **lambda-apigateway-role**.
+   * Permissions – Custom policy with permission to DynamoDB and CloudWatch Logs. This custom policy has the permissions that  the function needs to write data to DynamoDB and upload logs.
+
+   ```json
+   {
+   "Version": "2012-10-17",
+   "Statement": [
+   {
+     "Sid": "Stmt1428341300017",
+     "Action": [
+       "dynamodb:DeleteItem",
+       "dynamodb:GetItem",
+       "dynamodb:PutItem",
+       "dynamodb:Query",
+       "dynamodb:Scan",
+       "dynamodb:UpdateItem",
+       "dynamodb:DescribeTable"
+     ],
+     "Effect": "Allow",
+     "Resource": "*"
+   },
+   {
+     "Sid": "",
+     "Resource": "*",
+     "Action": [
+       "logs:CreateLogGroup",
+       "logs:CreateLogStream",
+       "logs:PutLogEvents"
+     ],
+     "Effect": "Allow"
+   }
+   ]
+   }
+   ```
 
 ### Create Lambda Function
 
 **To create the function**
+
 1. Click "Create function" in AWS Lambda Console
 
 ![Create function](./images/create-lambda.jpg)
 
 2. Select "Author from scratch". Use name **LambdaFunctionOverHttps** , select **Python 3.8** as Runtime. Under Permissions, select "Use an existing role", and select **lambda-apigateway-role** that we created, from the drop down
-
 3. Click "Create function"
 
 ![Lambda basic information](./images/lambda-basic-info.jpg)
@@ -103,6 +107,7 @@ To create an execution role
 4. Replace the boilerplate coding with the following code snippet and click "Save"
 
 **Example Python Code**
+
 ```python
 from __future__ import print_function
 from botocore.exceptions import ClientError
@@ -153,16 +158,19 @@ def lambda_handler(event, context):
 
 
 ```
+
 ![Lambda Code](./images/lambda-code-paste.jpg)
 
 ### Test Lambda Function
 
 Let's test our newly created function. We haven't created DynamoDB and the API yet, so we'll do a sample echo operation. The function should output whatever input we pass.
+
 1. Click the arrow on "Select a test event" and click "Configure test events"
 
 ![Configure test events](./images/lambda-test-event-create.jpg)
 
 2. Paste the following JSON into the event. The field "operation" dictates what the lambda function will perform. In this case, it'd simply return the payload from input event as output. Click "Create" to save
+
 ```json
 {
     "operation": "echo",
@@ -172,6 +180,7 @@ Let's test our newly created function. We haven't created DynamoDB and the API y
     }
 }
 ```
+
 ![Save test event](./images/save-test-event.jpg)
 
 3. Click "Test", and it will execute the test event. You should see the output in the console
@@ -195,24 +204,24 @@ Create the DynamoDB table that the Lambda function uses.
 
 ![create DynamoDB table](./images/create-dynamo-table.jpg)
 
-
 ### Create API
 
 **To create the API**
+
 1. Go to API Gateway console
 2. Click Create API
 
-![create API](./images/create-api-button.jpg) 
+![create API](./images/create-api-button.jpg)
 
 3. Scroll down and select "Build" for REST API
 
-![Build REST API](./images/build-rest-api.jpg) 
+![Build REST API](./images/build-rest-api.jpg)
 
 4. Give the API name as "DynamoDBOperations", keep everything as is, click "Create API"
 
 ![Create REST API](./images/create-new-api.jpg)
 
-5. Each API is collection of resources and methods that are integrated with backend HTTP endpoints, Lambda functions, or other AWS services. Typically, API resources are organized in a resource tree according to the application logic. At this time you only have the root resource, but let's add a resource next 
+5. Each API is collection of resources and methods that are integrated with backend HTTP endpoints, Lambda functions, or other AWS services. Typically, API resources are organized in a resource tree according to the application logic. At this time you only have the root resource, but let's add a resource next
 
 Click "Actions", then click "Create Resource"
 
@@ -222,7 +231,7 @@ Click "Actions", then click "Create Resource"
 
 ![Create resource](./images/create-resource-name.jpg)
 
-7. Let's create a POST Method for our API. With the "/dynamodbmanager" resource selected, Click "Actions" again and click "Create Method". 
+7. Let's create a POST Method for our API. With the "/dynamodbmanager" resource selected, Click "Actions" again and click "Create Method".
 
 ![Create resource method](./images/create-method-1.jpg)
 
@@ -252,7 +261,6 @@ In this step, you deploy the API that you created to a stage called prod.
 
 ![Copy Invoke Url](./images/copy-invoke-url.jpg)
 
-
 ### Running our solution
 
 1. The Lambda function supports using the create operation to create an item in your DynamoDB table. To request this operation, use the following JSON:
@@ -269,15 +277,18 @@ In this step, you deploy the API that you created to a stage called prod.
     }
 }
 ```
-2. To execute our API from local machine, we are going to use Postman and Curl command. You can choose either method based on your convenience and familiarity. 
-    * To run this from Postman, select "POST" , paste the API invoke url. Then under "Body" select "raw" and paste the above JSON. Click "Send". API should execute and return "HTTPStatusCode" 200.
 
-    ![Execute from Postman](./images/create-from-postman.jpg)
+2. To execute our API from local machine, we are going to use Postman and Curl command. You can choose either method based on your convenience and familiarity.
 
-    * To run this from terminal using Curl, run the below
-    ```
-    $ curl -X POST -d "{\"operation\":\"create\",\"tableName\":\"lambda-apigateway\",\"payload\":{\"Item\":{\"id\":\"1\",\"name\":\"Bob\"}}}" https://$API.execute-api.$REGION.amazonaws.com/prod/DynamoDBManager
-    ```   
+   * To run this from Postman, select "POST" , paste the API invoke url. Then under "Body" select "raw" and paste the above JSON. Click "Send". API should execute and return "HTTPStatusCode" 200.
+
+   ![Execute from Postman](./images/create-from-postman.jpg)
+
+   * To run this from terminal using Curl, run the below
+
+   ```
+   $ curl -X POST -d "{\"operation\":\"create\",\"tableName\":\"lambda-apigateway\",\"payload\":{\"Item\":{\"id\":\"1\",\"name\":\"Bob\"}}}" https://$API.execute-api.$REGION.amazonaws.com/prod/DynamoDBManager
+   ```
 3. To validate that the item is indeed inserted into DynamoDB table, go to Dynamo console, select "lambda-apigateway" table, select "Items" tab, and the newly inserted item should be displayed.
 
 ![Dynamo Item](./images/dynamo-item.jpg)
@@ -292,6 +303,7 @@ In this step, you deploy the API that you created to a stage called prod.
     }
 }
 ```
+
 ![List Dynamo Items](./images/dynamo-item-list.jpg)
 
 5. To delete an item from the table, we can use the "delete" operation of Lambda using the same API. Pass the following JSON to the API, and it will delete the id specified from the Dynamo table
@@ -307,6 +319,7 @@ In this step, you deploy the API that you created to a stage called prod.
     }
 }
 ```
+
 ![List Delete an Item](./images/delete.png)
 
 6. To update an item from the table, we can use the "update" operation of Lambda using the same API. Pass the following JSON to the API, and it will the id specified with numbers value from the Dynamo table. Note: this is patch operation, so we must create API gateway patch endpoint.
@@ -330,18 +343,18 @@ In this step, you deploy the API that you created to a stage called prod.
     }
 }
 ```
+
 ![List Dynamo Items](./images/patch.png)
 
 We have successfully created a serverless API using API Gateway, Lambda, and DynamoDB!
 
 ## Postman Collection
-![link to json file](./images/postman.png)[Link to json file](./images/LamdaApigatewayDynamoDb.postman_collection.json)
 
+![link to json file](./images/postman.png)[Link to json file](./images/LamdaApigatewayDynamoDb.postman_collection.json)
 
 ## Cleanup
 
 Let's clean up the resources we have created for this lab.
-
 
 ### Cleaning up DynamoDB
 
@@ -349,7 +362,7 @@ To delete the table, from DynamoDB console, select the table "lambda-apigateway"
 
 ![Delete Dynamo](./images/delete-dynamo.jpg)
 
-To delete the Lambda, from the Lambda console, select lambda "LambdaFunctionOverHttps", click "Actions", then click Delete 
+To delete the Lambda, from the Lambda console, select lambda "LambdaFunctionOverHttps", click "Actions", then click Delete
 
 ![Delete Lambda](./images/delete-lambda.jpg)
 
@@ -357,12 +370,15 @@ To delete the API we created, in API gateway console, under APIs, select "Dynamo
 
 ![Delete API](./images/delete-api.jpg)
 
-
 ### ADR
+
 ![ADR](./images/adr-auth0-integration.md)
 
 # TODO:
+
 1. Make Api gateway secure using (oauth, jwt, lamda authorizer, cognito) - DONE
-2. Add ADR
-3. UI Integration: Use system to do hotel reservation to test a full system
-4. Above can be done with amplify?
+2. Add ADR - DONE
+3. Update Postman Collection with Env config
+4. Add Swagger github pages for api documentation
+5. UI Integration: Use system to do hotel reservation to test a full system
+6. Above can be done with amplify?
