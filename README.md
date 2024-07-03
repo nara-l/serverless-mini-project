@@ -378,7 +378,8 @@ To delete the API we created, in API gateway console, under APIs, select "Dynamo
 
 1. Make Api gateway secure using (oauth, jwt, lamda authorizer, cognito) - DONE
 2. Add ADR - DONE
-3. Update Postman Collection with Env config
-4. Add Swagger github pages for api documentation
-5. UI Integration: Use system to do hotel reservation to test a full system
-6. Above can be done with amplify?
+3. Add unit test
+4. Update Postman Collection with Env config
+5. Add Swagger github pages for api documentation
+6. UI Integration: Use system to do hotel reservation to test a full system
+7. Above can be done with amplify?
